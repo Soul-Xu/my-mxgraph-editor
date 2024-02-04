@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, Tooltip } from 'antd';
+import { Collapse, Tooltip, Icon } from 'antd';
 import IMAGE_SHAPES from './shape-config/image-shape';
 
 import './sidebar.less';
@@ -104,7 +104,10 @@ const SIDEBAR_CARD_SHAPES = [{
 export default class SideBar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      activeMenu: "app",
+      showCollapsIcon: false
+    };
   }
 
   componentDidMount() {}
@@ -137,79 +140,106 @@ export default class SideBar extends React.Component {
     }, 1000);
   }
 
+  onHandleClickMenuItem(type) {
+    if (type === 'app') {
+      this.setState(prevState => ({
+        showCollapsIcon: !prevState.showCollapsIcon
+      }));
+    }
+  }
+
   render() {
+    const { activeMenu, showCollapsIcon } = this.state
+    console.log("render showCollapsIcon", showCollapsIcon);
+
     return (
-      <div className="J_Sidebar_Container sidebar-container">
-
-        <Collapse
-          bordered={false}
-          defaultActiveKey={['common', 'svg', 'picture', 'card']}
-          onChange={() => {
-            this.onChange();
-          }}
-        >
-          <Panel key="common" header="基本">
-
-            {SIDEBAR_BASIC_SHAPES.map(shape => (
-              <a
-                href="javascript:void(0);"
-                key={`panel_a_${shape.key}`}
-                className="geItem custom-sidebar-node common-panel-node"
-                data-shape-type="general"
-                data-shape-name={shape.key}
-                data-shape-label={shape.name}
-                data-shape-width={shape.width}
-                data-shape-height={shape.height}
-              >
-                <Tooltip
-                  placement="top"
-                  title={shape.name}
-                  key={`panel_${shape.key}`}
-                  className="tooltip"
-                >
-                  {shape.logo ? <img className="sidebar-node-image" src={shape.logo} alt="" /> : shape.key}
-                  <span className="sidebar-node-label">
-                    {shape.name}
-                  </span>
-                </Tooltip>
-              </a>
-            ))}
-
-          </Panel>
-
-          <Panel header="图形" key="picture">
-            {IMAGE_SHAPES.map(shape => (
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  return false;
-                }}
-                key={`panel_a_${shape.key}`}
-                href="a"
-                className="geItem custom-sidebar-node"
-                data-shape-type="image"
-                data-shape-width={shape.width}
-                data-shape-height={shape.height}
-                data-shape-name={shape.key}
-                data-shape-label={shape.name}
-                title={shape.name}
-              >
-                <Tooltip
-                  placement="top"
-                  title={shape.name}
-                  key={`panel_${shape.key}`}
-                  className="tooltip"
-                >
-                  <img className="sidebar-node-image" src={shape.logo} alt="" />
-                  <span className="sidebar-node-label">
-                    {shape.name}
-                  </span>
-                </Tooltip>
-              </a>
-            ))}
-
-          </Panel>
-        </Collapse>
+      <div className="container">
+        <div className="sidebar-menu">
+          <div 
+            className={activeMenu === "app" ? "menu-item-active" : "menu-item"} 
+            onClick={() => this.onHandleClickMenuItem("app")}>
+            <Tooltip key="appstore" title="图标" placement="right">
+              <Icon type="appstore" />
+            </Tooltip>
+          </div>
+          <div 
+            className={activeMenu === "bars" ? "menu-item-active" : "menu-item"} 
+            onClick={this.onHandleClickMenuItem("bars")}
+            style={{ position: "absolute", top: "50px" }}
+          >
+            <Icon type="bars" />
+          </div>
+        </div>
+        { showCollapsIcon && 
+          <div className="sidebar-container">
+            <Collapse
+              bordered={false}
+              defaultActiveKey={['common', 'svg', 'picture', 'card']}
+              onChange={() => {
+                this.onChange();
+              }}
+            >
+              <Panel key="common" header="基本">
+                {SIDEBAR_BASIC_SHAPES.map(shape => (
+                  <a
+                    href="javascript:void(0);"
+                    key={`panel_a_${shape.key}`}
+                    className="geItem custom-sidebar-node common-panel-node"
+                    data-shape-type="general"
+                    data-shape-name={shape.key}
+                    data-shape-label={shape.name}
+                    data-shape-width={shape.width}
+                    data-shape-height={shape.height}
+                  >
+                    <Tooltip
+                      placement="top"
+                      title={shape.name}
+                      key={`panel_${shape.key}`}
+                      className="tooltip"
+                    >
+                      {shape.logo ? <img className="sidebar-node-image" src={shape.logo} alt="" /> : shape.key}
+                      <span className="sidebar-node-label">
+                        {shape.name}
+                      </span>
+                    </Tooltip>
+                  </a>
+                ))}
+              </Panel>
+              <Panel header="图形" key="picture">
+                {IMAGE_SHAPES.map(shape => (
+                  <a
+                    onClick={(e) => {
+                      e.preventDefault();
+                      return false;
+                    }}
+                    key={`panel_a_${shape.key}`}
+                    href="a"
+                    className="geItem custom-sidebar-node"
+                    data-shape-type="image"
+                    data-shape-width={shape.width}
+                    data-shape-height={shape.height}
+                    data-shape-name={shape.key}
+                    data-shape-label={shape.name}
+                    title={shape.name}
+                  >
+                    <Tooltip
+                      placement="top"
+                      title={shape.name}
+                      key={`panel_${shape.key}`}
+                      className="tooltip"
+                    >
+                      <img className="sidebar-node-image" src={shape.logo} alt="" />
+                      <span className="sidebar-node-label">
+                        {shape.name}
+                      </span>
+                    </Tooltip>
+                  </a>
+                ))}
+  
+              </Panel>
+            </Collapse>
+          </div>
+        }
       </div>
     );
   }

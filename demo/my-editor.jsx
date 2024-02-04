@@ -137,7 +137,7 @@ class MyEditor extends React.Component {
     return (
       <div className="editor-container">
         <Layout>
-          <Sider width="235" theme="light">
+          <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
             <Sidebar key="sidebar" editor={editor} />
           </Sider>
           <Content>

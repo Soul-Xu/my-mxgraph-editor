@@ -1,6 +1,12 @@
 @fontColor: #E4E8EA;
 
+.container {
+  display: flex;
+}
+
 .sidebar-container {
+  position: absolute;
+  margin-left: 50px;
   width: 235px;
   height: 100%;
   min-height: 500px;
@@ -8,6 +14,7 @@
   border-right: 1px solid @fontColor;
   box-shadow: 0 0 4px 0 rgba(54, 71, 134, 0.1);
   overflow-y: scroll;
+  z-index: 999;
 
   .suanfa-name {
     padding-left: 6px;
@@ -115,5 +122,31 @@
       overflow-wrap: normal;
       text-align: center;
     }
+  }
+}
+
+.sidebar-menu {
+
+  .menu-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    width: 50px;
+    font-size: 24px;
+    z-index: 999;
+    cursor: pointer;
+  }
+
+  .menu-item-active {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    width: 50px;
+    font-size: 24px;
+    background: #fff;
+    z-index: 99999;
+    cursor: pointer;
   }
 }

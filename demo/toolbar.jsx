@@ -36,7 +36,6 @@ class Toolbar extends React.Component {
         const scale = graph.view.scale;
 
         // 例如，可以将缩放比例打印到控制台
-        console.log('当前缩放比例:', scale);
         this.setState({ scale }); // 使用 setState 更新组件的状态
       });
     }
@@ -53,7 +52,7 @@ class Toolbar extends React.Component {
     // 将缩放比例转换成百分比形式
     const scalePercentage = Math.round(scale * 100) + '%';
 
-    return [
+    return (
       <div key="toolbar" className="toolbar">
         <div
           className="toolbar-btn"
@@ -82,8 +81,8 @@ class Toolbar extends React.Component {
         >
           <Icon type="redo" />
         </div>
-      </div>,
-    ];
+      </div>
+    );
   }
 }
 
