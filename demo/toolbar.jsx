@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { message, Tooltip, Icon } from 'antd';
+import { message, Tooltip } from 'antd';
+import mxgraph from 'mxgraph'
 
 import './toolbar.less';
 
@@ -16,71 +17,179 @@ class Toolbar extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      scale: null
-    };
-  }
-
-  componentWillMount() {
-    
-  }
-
-  componentDidMount() {
-    const { editor } = this.props;
-    const graph = editor && editor.graph;
-
-    if (graph) {
-      // 添加缩放事件监听器
-      graph.addListener(mxEvent.ZOOM, (sender, evt) => {
-        // 在这里可以获取当前的缩放比例，并做相应的操作
-        const scale = graph.view.scale;
-
-        // 例如，可以将缩放比例打印到控制台
-        this.setState({ scale }); // 使用 setState 更新组件的状态
-      });
-    }
+    this.state = {};
   }
 
   render() {
-    const {
-      editor, updateDiagramData,
-    } = this.props;
+    const { editor, updateDiagramData } = this.props
 
-    const graph = editor && editor.graph;
-    const { scale } = this.state;
-  
-    // 将缩放比例转换成百分比形式
-    const scalePercentage = Math.round(scale * 100) + '%';
+    const onSave = () => {
+      // const xml = editor.getGraphXml(); // 获取当前画布的 XML 信息，这里假设有一个名为 getGraphXml 的方法来获取 XML
+      // console.log('XML:', xml);
+    
+      // // 将 XML 转换为 JSON
+      // const json = parseXmlToJson(xml);
+      // console.log('JSON object:', json);
+      // console.log('JSON:', JSON.stringify(json));
 
+      const diagramXml = window.localStorage.getItem('autosaveXml');
+      const svgXml = getSvgXml();
+      const mergedXml = mergeXml(diagramXml, svgXml);
+    
+      const json = parseXmlToJson(mergedXml);
+      console.log('JSON object:', json);
+      console.log('JSON:', JSON.stringify(json));
+    }
+    
+    const getSvgXml = () => {
+      const svgElement = document.querySelector('.thumbnail svg');
+      if (svgElement) {
+        const svgXml = new XMLSerializer().serializeToString(svgElement);
+        return parseSvgToXml(svgXml);
+      }
+      return '';
+    }
+
+    const mergeXml = (diagramXml, svgXml) => {
+      const diagramDoc = new DOMParser().parseFromString(diagramXml, 'text/xml');
+      const svgDoc = new DOMParser().parseFromString(svgXml, 'text/xml');
+    
+      // Append SVG nodes to diagram root node
+      const root = diagramDoc.getElementsByTagName('root')[0];
+      const svgRoot = svgDoc.getElementsByTagName('root')[0];
+      const svgCells = svgRoot.getElementsByTagName('mxCell');
+    
+      for (let i = 0; i < svgCells.length; i++) {
+        const svgCell = svgCells[i];
+        const clonedSvgCell = svgCell.cloneNode(true);
+        root.appendChild(clonedSvgCell);
+      }
+    
+      // Serialize the merged XML
+      const serializer = new XMLSerializer();
+      return serializer.serializeToString(diagramDoc);
+    };
+
+    const parseXmlToJson = (xml) => {
+      const xmlDoc = new DOMParser().parseFromString(xml, 'text/xml');
+      const root = xmlDoc.getElementsByTagName('root')[0];
+      const cells = root.getElementsByTagName('mxCell');
+    
+      const json = {
+        cells: []
+      };
+    
+      const edges = {}; // 用于存储连线信息
+    
+      for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+    
+        const id = cell.getAttribute('id') || '';
+        const value = cell.getAttribute('value') || '';
+        const style = cell.getAttribute('style') || '';
+        const vertex = cell.getAttribute('vertex') || '';
+    
+        const geometry = cell.getElementsByTagName('mxGeometry')[0];
+        let geometryData = {};
+        if (geometry) {
+          geometryData = {
+            x: geometry.getAttribute('x') || '',
+            y: geometry.getAttribute('y') || '',
+            width: geometry.getAttribute('width') || '',
+            height: geometry.getAttribute('height') || ''
+          };
+        }
+    
+        const shapeName = cell.getAttribute('shapeName');
+    
+        // 检查是否为连线
+        const edge = cell.getAttribute('edge');
+        if (edge === '1') {
+          const source = cell.getAttribute('source');
+          const target = cell.getAttribute('target');
+    
+          // 获取源节点和目标节点的值
+          const sourceNodeValue = xmlDoc.querySelector(`mxCell[id='${source}']`).getAttribute('value');
+          const targetNodeValue = xmlDoc.querySelector(`mxCell[id='${target}']`).getAttribute('value');
+    
+          // 构建连线的ID
+          const edgeId = `${sourceNodeValue}-${targetNodeValue}`;
+    
+          edges[edgeId] = {
+            source: sourceNodeValue,
+            target: targetNodeValue
+          };
+        } else if (shapeName !== null) {
+          const cellData = {
+            id,
+            value,
+            style,
+            vertex,
+            shapeName,
+            geometry: geometryData
+          };
+          json.cells.push(cellData);
+        }
+      }
+    
+
+      // 计算连线的源和目标坐标
+      Object.entries(edges).forEach(([edgeId, edge]) => {
+
+        console.log("edge", edgeId, edge)
+        // 查找起点和终点节点信息
+        const sourceNode = json.cells.find(cell => cell.value === edge.source);
+        const targetNode = json.cells.find(cell => cell.value === edge.target);
+    
+        if (sourceNode && targetNode) {
+          // 计算起点和终点坐标
+          const sourceX = parseFloat(sourceNode.geometry.x) + parseFloat(sourceNode.geometry.width) / 2;
+          const sourceY = parseFloat(sourceNode.geometry.y) + parseFloat(sourceNode.geometry.height) / 2;
+          const targetX = parseFloat(targetNode.geometry.x) + parseFloat(targetNode.geometry.width) / 2;
+          const targetY = parseFloat(targetNode.geometry.y) + parseFloat(targetNode.geometry.height) / 2;
+    
+          json.cells.push({
+            id: edgeId,
+            source: { x: sourceX, y: sourceY },
+            target: { x: targetX, y: targetY },
+            style: 'edgeStyle' // 你可能需要为连线设置一个样式
+          });
+        }
+      });
+    
+      return json;
+    };
+    
+    
+    
     return (
-      <div key="toolbar" className="toolbar">
-        <div
-          className="toolbar-btn"
+      <div className="container">
+        <div key="toolbtn" className="toolbtn">
+          <div
+          className="toolbar-btn-new"
           onClick={() => {
-            graph.zoomIn();
+            const diagramXml = window.localStorage.getItem('autosaveXml');
+            updateDiagramData(diagramXml);
           }}
         >
-          <Icon type="plus" />
-        </div>
-        <div className="toolbar-process">
-          <span>{scalePercentage}</span>
-        </div>
-        <div
-          className="toolbar-btn"
-          onClick={() => {
-            graph.zoomOut();
-          }}
-        >
-          <Icon type="minus" />
+          <span>新建服务节点</span>
         </div>
         <div
           className="toolbar-btn"
+          onClick={() => onSave()}
+        >
+          <span>保存</span>
+        </div>
+        <div
+          className="toolbar-btn"
           onClick={() => {
-            graph.zoomActual();
+          
           }}
         >
-          <Icon type="redo" />
+          <span>关闭</span>
         </div>
+        </div>
+        <div className="thumbnail"></div>
       </div>
     );
   }

@@ -1,12 +1,14 @@
 import React from 'react';
-import { message, Layout } from 'antd';
+import { message, Layout, Icon } from 'antd';
 
 import Sidebar from './sidebar';
+import Scalebar from './scalebar';
 import Toolbar from './toolbar';
-import ToolBtn from './toolBtn'
 import Editor from '../src/editor';
+import PropertyPanel from './propertyPanel';
 
 import IMAGE_SHAPES from './shape-config/image-shape';
+import NETWORK_SHAPES from './shape-config/network-shape';
 import CARD_SHAPES from './shape-config/card-shape';
 import SVG_SHAPES from './shape-config/svg-shape.xml';
 
@@ -39,6 +41,7 @@ class MyEditor extends React.Component {
       copyFunc: this.copyFunc,
       valueChangeFunc: this.valueChangeFunc,
       IMAGE_SHAPES,
+      NETWORK_SHAPES,
       CARD_SHAPES,
       SVG_SHAPES
     });
@@ -71,23 +74,47 @@ class MyEditor extends React.Component {
     console.log('double click', cell);
   };
 
+  // id相同时
+  // cellCreatedFunc = (currentCell) => {
+  //   const allCells = this.editor.getAllCells();
+
+  //   let sameShapeNameCount = 0;
+  //   const { shapeName } = currentCell;
+
+  //   allCells
+  //     && Object.keys(allCells).forEach((index) => {
+  //       if (allCells[index].shapeName === shapeName) {
+  //         sameShapeNameCount += 1;
+  //       }
+  //     });
+
+  //   const labelName = currentCell.value;
+
+  //   this.editor.renameCell(`${labelName}${sameShapeNameCount}`, currentCell);
+  // };
+
   cellCreatedFunc = (currentCell) => {
     const allCells = this.editor.getAllCells();
-
+  
     let sameShapeNameCount = 0;
     const { shapeName } = currentCell;
-
+  
     allCells
       && Object.keys(allCells).forEach((index) => {
         if (allCells[index].shapeName === shapeName) {
           sameShapeNameCount += 1;
         }
       });
-
+  
     const labelName = currentCell.value;
-
-    this.editor.renameCell(`${labelName}${sameShapeNameCount}`, currentCell);
+  
+    // Generate unique ID using timestamp
+    const timestamp = Date.now();
+    const uniqueId = `${labelName}${sameShapeNameCount}_${timestamp}`;
+  
+    this.editor.renameCell(uniqueId, currentCell);
   };
+  
 
   deleteFunc = (cells) => {
     console.log('cells deleted: ', cells);
@@ -109,6 +136,7 @@ class MyEditor extends React.Component {
     const oDOM = oParser.parseFromString(xml, 'application/xml');
 
     window.autoSaveXmlDom = oDOM;
+    console.log("autoSaveFunc", xml)
 
     window.localStorage.setItem('autosaveXml', xml);
   };
@@ -136,22 +164,30 @@ class MyEditor extends React.Component {
 
     return (
       <div className="editor-container">
+        {/* <div className="container-goback">
+          <div>
+            <Icon type="left" />
+          </div>
+        </div> */}
         <Layout>
           <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
             <Sidebar key="sidebar" editor={editor} />
           </Sider>
           <Content>
             <div className="graph-inner-container">
-            <ToolBtn editor={editor} />
+            <Toolbar editor={editor} updateDiagramData={this.updateDiagramData} />
               {editor ? (
-                <Toolbar
+                <Scalebar
                   editor={editor}
-                  updateDiagramData={this.updateDiagramData}
+                  // updateDiagramData={this.updateDiagramData}
                 />
               ) : null}
               <div className="graph-content" key="graphcontent" />
             </div>
           </Content>
+          <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
+            <PropertyPanel key="propertypanel" editor={editor} />
+          </Sider>
         </Layout>
       </div>
     );

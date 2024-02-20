@@ -1,6 +1,10 @@
 # mxgraph-editor
 A mxGraph editor support 3 types of shapes, svg/image/card. 
 
+# node version
+
+14.21.3
+
 ![](https://img.alicdn.com/tfs/TB17cJ1GXzqK1RjSZSgXXcpAVXa-2880-1416.png)
 
 # development

@@ -52,6 +52,7 @@ export default class Editor {
       valueChangeFunc,
       changeFunc,
       IMAGE_SHAPES,
+      NETWORK_SHAPES,
       CARD_SHAPES,
       SVG_SHAPES
     } = config;
@@ -75,6 +76,7 @@ export default class Editor {
     util.configShapes({
       graph,
       IMAGE_SHAPES,
+      NETWORK_SHAPES,
       CARD_SHAPES,
       SVG_SHAPES
     });

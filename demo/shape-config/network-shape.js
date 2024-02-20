@@ -1,19 +1,5 @@
 export default [
   {
-    name: '服务器',
-    key: 'service',
-    logo: '../../resources/images/service.svg',
-    width: 80,
-    height: 80
-  },
-  {
-    name: '服务器',
-    key: 'active_service',
-    logo: '../../resources/images/active_service.svg',
-    width: 80,
-    height: 80
-  },
-  {
     name: '路由器',
     key: 'router',
     logo: '../../resources/images/a-ziyuan52.svg',
