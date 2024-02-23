@@ -21,7 +21,7 @@ class MyEditor extends React.Component {
     super(props);
 
     this.state = {
-      editor: null
+      editor: null,
     };
 
     this.graphContainerClickCount = 0;
@@ -65,7 +65,6 @@ class MyEditor extends React.Component {
     // remove event listeners when component will unmount
     this.editor.removeEventListeners();
   }
-
 
   /**
    * double click event callback
@@ -160,7 +159,7 @@ class MyEditor extends React.Component {
   }
 
   render() {
-    const { editor } = this.state;
+    const { editor, thumbnailUrl } = this.state;
 
     return (
       <div className="editor-container">
@@ -179,7 +178,6 @@ class MyEditor extends React.Component {
               {editor ? (
                 <Scalebar
                   editor={editor}
-                  // updateDiagramData={this.updateDiagramData}
                 />
               ) : null}
               <div className="graph-content" key="graphcontent" />

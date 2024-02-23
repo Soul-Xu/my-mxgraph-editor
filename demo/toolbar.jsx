@@ -24,51 +24,14 @@ class Toolbar extends React.Component {
     const { editor, updateDiagramData } = this.props
 
     const onSave = () => {
-      // const xml = editor.getGraphXml(); // 获取当前画布的 XML 信息，这里假设有一个名为 getGraphXml 的方法来获取 XML
-      // console.log('XML:', xml);
+      const xml = editor.getGraphXml(); // 获取当前画布的 XML 信息，这里假设有一个名为 getGraphXml 的方法来获取 XML
+      console.log('XML:', xml);
     
-      // // 将 XML 转换为 JSON
-      // const json = parseXmlToJson(xml);
-      // console.log('JSON object:', json);
-      // console.log('JSON:', JSON.stringify(json));
-
-      const diagramXml = window.localStorage.getItem('autosaveXml');
-      const svgXml = getSvgXml();
-      const mergedXml = mergeXml(diagramXml, svgXml);
-    
-      const json = parseXmlToJson(mergedXml);
+      // 将 XML 转换为 JSON
+      const json = parseXmlToJson(xml);
       console.log('JSON object:', json);
       console.log('JSON:', JSON.stringify(json));
     }
-    
-    const getSvgXml = () => {
-      const svgElement = document.querySelector('.thumbnail svg');
-      if (svgElement) {
-        const svgXml = new XMLSerializer().serializeToString(svgElement);
-        return parseSvgToXml(svgXml);
-      }
-      return '';
-    }
-
-    const mergeXml = (diagramXml, svgXml) => {
-      const diagramDoc = new DOMParser().parseFromString(diagramXml, 'text/xml');
-      const svgDoc = new DOMParser().parseFromString(svgXml, 'text/xml');
-    
-      // Append SVG nodes to diagram root node
-      const root = diagramDoc.getElementsByTagName('root')[0];
-      const svgRoot = svgDoc.getElementsByTagName('root')[0];
-      const svgCells = svgRoot.getElementsByTagName('mxCell');
-    
-      for (let i = 0; i < svgCells.length; i++) {
-        const svgCell = svgCells[i];
-        const clonedSvgCell = svgCell.cloneNode(true);
-        root.appendChild(clonedSvgCell);
-      }
-    
-      // Serialize the merged XML
-      const serializer = new XMLSerializer();
-      return serializer.serializeToString(diagramDoc);
-    };
 
     const parseXmlToJson = (xml) => {
       const xmlDoc = new DOMParser().parseFromString(xml, 'text/xml');

@@ -2,72 +2,60 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Input, Row, Divider, Icon } from 'antd';
 import "./propertyPanel.less"; // 换成你的样式文件路径
+/** components */
+import BasicInfo from './information/basic';
+import DetailInfo from './information/detail';
 
 const { Sider, Content } = Layout;
 
 const PropertyPanel = () => {
-  console.log("PropertyPanel")
   const [showContent, setShowContent] = useState(false)
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const [activeIcon, setActiveIcon] = useState('basic');
 
-  const handleMenuClick = (menuItem) => {
-    console.log("handleMenuClick", menuItem)
-    if (menuItem === selectedMenuItem) {
+  const handleIconClick = (menuItem) => {
+    if (menuItem === activeIcon) {
       // 如果点击的是当前已选中的 menuItem，切换显示状态
       setShowContent(!showContent);
     } else {
       // 如果点击的是不同的 menuItem，保持之前的显示状态
-      setSelectedMenuItem(menuItem);
-      setShowContent(true);
+      setActiveIcon(menuItem);
+      setShowContent(true)
     }
   };
 
-  useEffect(() => {
-    console.log("showContent", showContent)
-  }, [showContent])
-
   return (
     <div className={"container"} style={{ background: '#fff', borderRadius: '4px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', display: showContent ? 'flex' : ""}}>
-      <Sider theme="light" width={60} style={{ borderRight: '1px solid #e8e8e8', width: "60px", height: "800px", boxSizing: "border-box" }}>
+      <Sider theme="light" width={50} style={{ borderRight: '1px solid #e8e8e8', width: "50px", boxSizing: "border-box" }}>
         <div mode="vertical" style={{ height: '100%', borderRight: 'none' }}>
-          <div key="basic" style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} onClick={() => handleMenuClick("basic")}>
-            <Icon type="user" />
+          <div className={activeIcon === 'basic' ? "icon-item-active" : "icon-item"} key="basic" onClick={() => handleIconClick("basic")}>
+            <Icon size={50} type="user" />
           </div> 
-          <div key="details" style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} onClick={() => handleMenuClick("details")}>
-            <Icon type="edit" />    
+          <div className={activeIcon === 'details' ? "icon-item-active" : "icon-item"} key="details" onClick={() => handleIconClick("details")}>
+            <Icon size={50} type="edit" />    
           </div>
-          <div key="config" style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} onClick={() => handleMenuClick("config")}>
-            <Icon type="setting" />
+          <div className={activeIcon === 'config' ? "icon-item-active" : "icon-item"} key="config" onClick={() => handleIconClick("config")}>
+            <Icon size={50} type="setting" />
           </div>
-          <div key="trend" style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} onClick={() => handleMenuClick("trend")}>
-            <Icon type="line-chart" />
+          <div className={activeIcon === 'trend' ? "icon-item-active" : "icon-item"} key="trend" onClick={() => handleIconClick("trend")}>
+            <Icon size={50} type="line-chart" />
           </div>
         </div>
       </Sider>
-      <Content style={{ padding: '10px', flex: 1 }}>
+      {
+        showContent && <div>
         <div>
-          {selectedMenuItem === 'basic' && (
-            <div>
-              <Row style={{ marginBottom: "10px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
-                <div className={"content-item-title"}>
-                  <span>基本信息</span>
-                </div>
-              </Row>
-              {/* 在这里可以展示基本信息的具体内容 */}
+          {activeIcon === 'basic' && (
+            <div className='item-content'>
+              <BasicInfo />
             </div>
           )}
-          {selectedMenuItem === 'details' && (
-            <div>
-              <Row style={{ marginBottom: "10px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
-                <div className={"content-item-title"}>
-                  <span>详情信息</span>
-                </div>
-              </Row>
-              {/* 在这里可以展示详情信息的具体内容 */}
+          {activeIcon === 'details' && (
+            <div className='item-content'>
+              <DetailInfo />
             </div>
           )}
-          {selectedMenuItem === 'config' && (
-            <div>
+          {activeIcon === 'config' && (
+            <div className='item-content'>
               <Row style={{ marginBottom: "10px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
                 <div className={"content-item-title"}>
                   <span>配置信息</span>
@@ -76,8 +64,8 @@ const PropertyPanel = () => {
               {/* 在这里可以展示配置信息的具体内容 */}
             </div>
           )}
-          {selectedMenuItem === 'trend' && (
-            <div>
+          {activeIcon === 'trend' && (
+            <div className='item-content'>
               <Row style={{ marginBottom: "10px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
                 <div className={"content-item-title"}>
                   <span>变化趋势</span>
@@ -87,7 +75,8 @@ const PropertyPanel = () => {
             </div>
           )}
         </div>
-      </Content>
+      </div>
+      }
     </div>
   );
 };
