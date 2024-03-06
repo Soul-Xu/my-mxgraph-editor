@@ -1,0 +1,106 @@
+.tool-container {
+  width: 220px;
+  height: calc(100vh - 48px);
+  background: #FFFFFF;
+
+  .tool-content {
+    padding: 12px;
+
+    .content-item {
+      display: flex;
+      align-items: center;
+
+      .content-item-icon {
+        width: 4px;
+        height: 14px;
+        background: #D49A60;
+        margin-right: 4px;
+      }
+
+      .content-item-text {
+        height: 20px;
+        font-family: MicrosoftYaHei, MicrosoftYaHei;
+        font-weight: bold;
+        font-size: 14px;
+        color: #333333;
+        line-height: 20px;
+        text-align: left;
+        font-style: normal;
+      }
+    }
+
+    .content-cards {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+
+      .content-cards-item {
+        width: 92px;
+        height: 82px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+
+        .cards-item-image {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          display: flex;
+          // align-content: center;
+          justify-content: center;
+          margin-bottom: 4px;
+          align-items: center;
+          color: #fff;
+        }
+
+        .cards-item-text {
+          height: 20px;
+          font-family: MicrosoftYaHei;
+          font-size: 12px;
+          color: #333333;
+          line-height: 20px;
+          text-align: center;
+          font-style: normal;
+        }
+      }
+    }
+
+    .content-list {
+      margin-top: 13px;
+      height: 596px;
+      overflow: auto;
+
+      .content-list-item {
+        width: 196px;
+        height: 56px;
+        display: flex;
+        flex-direction: column;
+        // justify-content: space-between;
+        // align-items: center;
+        margin-bottom: 12px;
+        box-shadow: inset 0px -1px 0px 0px #EBEBEB;
+        border-bottom: 1px solid #EBEBEB;
+
+        .list-item-text {
+          height: 20px;
+          font-family: MicrosoftYaHei;
+          font-size: 14px;
+          color: #333333;
+          line-height: 20px;
+          text-align: left;
+          font-style: normal;
+        }
+        .list-item-date {
+          height: 20px;
+          font-family: MicrosoftYaHei;
+          font-size: 14px;
+          color: #999999;
+          line-height: 20px;
+          text-align: left;
+          font-style: normal;
+        }
+      }
+    }
+  }
+}

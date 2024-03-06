@@ -1,20 +1,17 @@
 import React from 'react';
 import { message, Layout, Icon } from 'antd';
-
+import mxgraph from 'mxgraph'; // 导入 mxgraph 库
 import Sidebar from './sidebar';
 import Scalebar from './scalebar';
 import Toolbar from './toolbar';
-import Editor from '../src/editor';
+import Editor from '../../src/editor';
 import PropertyPanel from './propertyPanel';
-
-import IMAGE_SHAPES from './shape-config/image-shape';
-import NETWORK_SHAPES from './shape-config/network-shape';
-import CARD_SHAPES from './shape-config/card-shape';
-import SVG_SHAPES from './shape-config/svg-shape.xml';
-
+import IMAGE_SHAPES from '../shape-config/image-shape';
+import NETWORK_SHAPES from '../shape-config/network-shape';
 import './my-editor.less';
+import { contentDemoSvg } from './constants'
 
-const { Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout;
 
 class MyEditor extends React.Component {
   constructor(props) {
@@ -22,12 +19,37 @@ class MyEditor extends React.Component {
 
     this.state = {
       editor: null,
+      svgElement: null, // 初始化为null
+      type: '' // 当前的模式
     };
 
     this.graphContainerClickCount = 0;
   }
 
   componentDidMount() {
+
+    console.log("componentDidMount", window.location.href)
+
+    // 对当前的url做处理
+    // 获取当前 URL 中的查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 检测是否存在 type 属性
+    if (urlParams.has('type')) {
+      // 获取 type 属性的值
+      const typeValue = urlParams.get('type');
+      console.log('type 属性的值为:', typeValue);
+      this.setState({ type: typeValue });
+
+      // 将contentDemoSvg的内容添加到class为graph-content的div内
+      const graphContentDiv = document.querySelector('.graph-content');
+      if (graphContentDiv) {
+        graphContentDiv.innerHTML = contentDemoSvg;
+      }
+    } else {
+      console.log('URL 中不包含 type 属性');
+    }
+
     this.mounted = true;
 
     const editor = new Editor({
@@ -42,8 +64,6 @@ class MyEditor extends React.Component {
       valueChangeFunc: this.valueChangeFunc,
       IMAGE_SHAPES,
       NETWORK_SHAPES,
-      CARD_SHAPES,
-      SVG_SHAPES
     });
 
     this.editor = editor;
@@ -51,10 +71,6 @@ class MyEditor extends React.Component {
     window.editor = editor;
 
     editor.initCustomPort('https://gw.alicdn.com/tfs/TB1PqwZzzDpK1RjSZFrXXa78VXa-200-200.png');
-
-    const xml = window.localStorage.getItem('autosaveXml');
-
-    this.editor.renderGraphFromXml(xml);
 
     this.setState({ editor });
   }
@@ -72,25 +88,6 @@ class MyEditor extends React.Component {
   doubleClickFunc = (cell) => {
     console.log('double click', cell);
   };
-
-  // id相同时
-  // cellCreatedFunc = (currentCell) => {
-  //   const allCells = this.editor.getAllCells();
-
-  //   let sameShapeNameCount = 0;
-  //   const { shapeName } = currentCell;
-
-  //   allCells
-  //     && Object.keys(allCells).forEach((index) => {
-  //       if (allCells[index].shapeName === shapeName) {
-  //         sameShapeNameCount += 1;
-  //       }
-  //     });
-
-  //   const labelName = currentCell.value;
-
-  //   this.editor.renameCell(`${labelName}${sameShapeNameCount}`, currentCell);
-  // };
 
   cellCreatedFunc = (currentCell) => {
     const allCells = this.editor.getAllCells();
@@ -144,48 +141,68 @@ class MyEditor extends React.Component {
     console.log('click', cell);
   };
 
-  undoFunc = (histories) => {
-    console.log('undo', histories);
-  }
+  // undoFunc = (histories) => {
+  //   console.log('undo', histories);
+  // }
 
-  copyFunc = (cells) => {
-    console.log('copy', cells);
-  }
+  // copyFunc = (cells) => {
+  //   console.log('copy', cells);
+  // }
 
   updateDiagramData = (data) => {
     console.log(`update diagram: ${data}`);
+  }
 
-    message.info('diagram save success');
+  goBackCenter = () => {
+    window.open(`http://localhost:3030`, "_blank")
   }
 
   render() {
-    const { editor, thumbnailUrl } = this.state;
+    const { editor, type } = this.state;
 
     return (
       <div className="editor-container">
-        {/* <div className="container-goback">
-          <div>
+        <Header className="header">
+          <div className="header-icon" onClick={() => this.goBackCenter()}>
             <Icon type="left" />
           </div>
-        </div> */}
+          <div className="header-title">
+            <span>{"Ai服务地铁图"}</span>
+            <Icon type="caret-down" />
+          </div>
+        </Header>
         <Layout>
-          <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
-            <Sidebar key="sidebar" editor={editor} />
-          </Sider>
+          {
+            type !== 'check' && (
+              <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
+                <Sidebar key="sidebar" editor={editor} />
+              </Sider>
+            )
+          }
           <Content>
             <div className="graph-inner-container">
-            <Toolbar editor={editor} updateDiagramData={this.updateDiagramData} />
-              {editor ? (
-                <Scalebar
-                  editor={editor}
-                />
-              ) : null}
+            { 
+            type !== 'check' && (
+              <div>
+                <Toolbar editor={editor} updateDiagramData={this.updateDiagramData} />
+                {editor ? (
+                  <Scalebar
+                    editor={editor}
+                  />
+                ) : null}
+              </div>
+            )
+            }
               <div className="graph-content" key="graphcontent" />
             </div>
           </Content>
-          <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
-            <PropertyPanel key="propertypanel" editor={editor} />
-          </Sider>
+          {
+            type !== 'check' && (
+              <Sider width="50" theme="light" style={{ background: "#F7F8FA" }}>
+                <PropertyPanel key="propertypanel" editor={editor} />
+              </Sider>
+            )
+          }
         </Layout>
       </div>
     );

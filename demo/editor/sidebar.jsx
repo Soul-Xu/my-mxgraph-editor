@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Collapse, Tooltip, Icon } from 'antd';
-import IMAGE_SHAPES from './shape-config/image-shape';
-import NETWORK_SHAPES from './shape-config/network-shape'
+import IMAGE_SHAPES from '../shape-config/image-shape';
+import NETWORK_SHAPES from '../shape-config/network-shape'
 
 import './sidebar.less';
 

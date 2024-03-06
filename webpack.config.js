@@ -74,7 +74,19 @@ module.exports = {
     {
       test: /\.xml$/,
       loader: 'raw-loader'
-    }
+    },
+    {
+      test: /\.(png|jpe?g|gif|svg)$/,
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            limit: 8192, // 小于8kb的图片会被转成 base64 格式
+            name: 'images/[name].[hash:8].[ext]' // 输出的文件名规则
+          }
+        }
+      ]
+    },
     ]
   },
   plugins: [
