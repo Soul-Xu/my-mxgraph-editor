@@ -2,14 +2,21 @@ import React, { useState } from 'react'
 import { Divider, Icon } from 'antd';
 import './index.less';
 import GeneralInfo from '../general';
+import HostInfo from '../host';
+import SimpleLineChart from '../graph';
 
 const BasicInfo = () => {
   const [showGeneral, setShowGeneral] = useState(false)
+  const [showHost, setShowHost] = useState(false)
 
   const setGeneralInfo = () => {
     const show = showGeneral
-    console.log("show", show)
     setShowGeneral(!show)
+  }
+  
+  const setHostInfo = () => {
+    const show = showHost
+    setShowHost(!show)
   }
 
   return (
@@ -90,16 +97,17 @@ const BasicInfo = () => {
             </div>
           </div>
           <div className='info-graph'>
-            <div className='graph-title'>
+            <div className='graph-title' onClick={setHostInfo}>
               服务请求数
             </div>
             <div className='graph-content'>
-              {/* <SimpleLineChart /> */}
+              <SimpleLineChart />
             </div>
           </div>
         </div>
       </div>
       { showGeneral && <GeneralInfo /> }
+      { showHost && <HostInfo />}
     </div>
   )
 }
