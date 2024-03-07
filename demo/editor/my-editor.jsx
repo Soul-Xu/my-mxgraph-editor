@@ -9,7 +9,7 @@ import PropertyPanel from './propertyPanel';
 import IMAGE_SHAPES from '../shape-config/image-shape';
 import NETWORK_SHAPES from '../shape-config/network-shape';
 import './my-editor.less';
-import { contentDemoSvg } from './constants'
+import { contentDemoSvg, contentDemo } from './constants'
 
 const { Header, Sider, Content } = Layout;
 
@@ -45,10 +45,18 @@ class MyEditor extends React.Component {
       const graphContentDiv = document.querySelector('.graph-content');
       if (graphContentDiv) {
         graphContentDiv.innerHTML = contentDemoSvg;
+
+        // 添加点击事件处理程序
+        graphContentDiv.addEventListener('click', this.handleNodeClick);
       }
     } else {
       console.log('URL 中不包含 type 属性');
     }
+
+    // const graphContentDiv = document.querySelector('.graph-content');
+    // if (graphContentDiv) {
+    //   graphContentDiv.innerHTML = contentDemoSvg;
+    // }
 
     this.mounted = true;
 
@@ -73,6 +81,8 @@ class MyEditor extends React.Component {
     editor.initCustomPort('https://gw.alicdn.com/tfs/TB1PqwZzzDpK1RjSZFrXXa78VXa-200-200.png');
 
     this.setState({ editor });
+
+    // this.fetchGraphData();
   }
 
   componentWillUnmount() {
@@ -156,6 +166,19 @@ class MyEditor extends React.Component {
   goBackCenter = () => {
     window.open(`http://localhost:3030`, "_blank")
   }
+  
+  // 图形中元素的点击事件
+  handleNodeClick = (event) => {
+    console.log("event", event.target.tagName)
+    // 判断点击的是不是 g 标签
+    if (event.target.tagName === 'image') {
+        // // 获取具体的 g 元素，可以在这里执行你想要的操作
+        const clickedNode = event.target;
+        console.log('Clicked on node:', clickedNode);
+        const parentNode = event.target.parentNode;
+        console.log('Parent on node:', parentNode); 
+    }
+  }
 
   render() {
     const { editor, type } = this.state;
@@ -193,7 +216,9 @@ class MyEditor extends React.Component {
               </div>
             )
             }
-              <div className="graph-content" key="graphcontent" />
+              <div className="graph-content" key="graphcontent">
+                {/* <div>{contentDemoSvg}</div> */}
+              </div>
             </div>
           </Content>
           {
