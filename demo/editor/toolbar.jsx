@@ -48,6 +48,10 @@ class Toolbar extends React.Component {
       this.setState({ showSaveGraph: true });
     }
 
+    const onExportPNG = () => {
+      console.log('Exporting PNG...');
+    }
+
     // 可以生成图片，基础图形可以生成图片，但是带有图标的则不能显示图标
     const onSaveGraph = () => {
       const container = document.querySelector('.graph-content');
@@ -106,8 +110,14 @@ class Toolbar extends React.Component {
           >
             <span>保存</span>
           </div>
-          <div className="toolbar-btn" onClick={() => onSaveGraph(editor)}>
+          {/* <div className="toolbar-btn" onClick={() => onSaveGraph(editor)}>
             <span>生成图片</span>
+          </div> */}
+          <div
+            className="toolbar-btn"
+            onClick={() => onSave()}
+          >
+            <span>导出PNG图片</span>
           </div>
           <div
             className="toolbar-btn"
